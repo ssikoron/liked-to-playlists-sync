@@ -13,6 +13,7 @@ Spotify app in my car (Android Automotive) doesn't provide any way to automatica
 - Node.js 18+ and npm/pnpm
 - A Spotify account
 - Spotify Developer credentials (Client ID and Client Secret)
+- If you want to automate it - some sort of a server + setting it up as a CRON job
 
 ### Installation
 
