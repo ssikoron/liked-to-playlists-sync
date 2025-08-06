@@ -7,7 +7,7 @@ export type CachedProfile = {
   playlistId: string;
   snapshotId: string;
   tracksTotal: number;
-  updatedAt: string; // ISO
+  updatedAt: string;
   genres: Record<string, number>;
 };
 

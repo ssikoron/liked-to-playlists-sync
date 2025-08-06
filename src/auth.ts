@@ -1,3 +1,6 @@
+/**
+ * Helper for retrieving access and refresh tokens from Spotify
+ */
 import "dotenv/config";
 import http from "node:http";
 import { URL } from "node:url";
@@ -37,6 +40,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (!req.url) return;
     const url = new URL(req.url, SPOTIFY_REDIRECT_URI);
+
     if (url.pathname !== "/callback") {
       res.statusCode = 404;
       res.end("Not found");

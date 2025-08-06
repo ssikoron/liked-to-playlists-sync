@@ -1,3 +1,6 @@
+/**
+ * Creates playlist profiles and assigns a track to a particular playlist
+ */
 import {
   iteratePlaylistTracks,
   getSeveralArtists,
@@ -18,14 +21,12 @@ export async function buildPlaylistGenreProfile(
   }
   const counts: GenreProfile = new Map();
 
-  // Collect unique artist IDs to minimize API calls
   const artistIds = new Set<string>();
   for await (const track of iteratePlaylistTracks(playlistId)) {
     for (const a of track.artists) artistIds.add(a.id);
   }
   const ids = [...artistIds].filter(Boolean);
 
-  // Fetch artists in batches of 50
   for (let i = 0; i < ids.length; i += 50) {
     const res = await getSeveralArtists(ids.slice(i, i + 50));
     for (const artist of res.body.artists ?? []) {
@@ -51,17 +52,19 @@ export function scoreTrackAgainstProfile(
   profile: GenreProfile,
 ): number {
   let score = 0;
-  for (const g of trackGenres) score += profile.get(g) ?? 0;
+  for (const g of trackGenres) {
+    score += profile.get(g) ?? 0;
+  }
   return score;
 }
 
-/** Return the best playlistId by summed genre frequency score; ties break by first occurrence. */
 export function pickBestPlaylist(
   trackGenres: string[],
   profiles: Record<string, GenreProfile>,
 ): string | null {
   let bestId: string | null = null;
   let bestScore = -1;
+
   for (const [pid, prof] of Object.entries(profiles)) {
     const s = scoreTrackAgainstProfile(trackGenres, prof);
     if (s > bestScore) {
@@ -69,5 +72,6 @@ export function pickBestPlaylist(
       bestId = pid;
     }
   }
+
   return bestId;
 }

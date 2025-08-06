@@ -5,7 +5,7 @@ const STATE_PATH = path.resolve(".data/state.json");
 
 export type State = {
   lastProcessedAddedAt?: string;
-  lastProfileRebuildTime?: Record<string, string>; // Mapping of playlistId to ISO timestamp
+  lastProfileRebuildTime?: Record<string, string>;
 };
 
 export async function readState(): Promise<State> {

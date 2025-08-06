@@ -11,7 +11,7 @@ import {
   scoreTrackAgainstProfile,
 } from "./genreRouter.js";
 
-// Default rebuild interval is 24 hours if not specified
+// Rebluild genre profiles every 24 hours by default
 const REBUILD_GENRE_PROFILE_INTERVAL = process.env
   .REBUILD_GENRE_PROFILE_INTERVAL
   ? parseInt(process.env.REBUILD_GENRE_PROFILE_INTERVAL)
@@ -28,7 +28,7 @@ function extractPlaylistId(raw: string): string | null {
   const url = s.match(/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)/);
   if (url) return url[1];
 
-  // Case 3: bare id (possibly with ?si=… or other query)
+  // Case 3: bare id (possibly with ?something)
   const bare = s.split("?")[0];
   if (/^[a-zA-Z0-9]+$/.test(bare)) return bare;
 
@@ -74,7 +74,7 @@ async function main() {
     state.lastProfileRebuildTime = {};
   }
 
-  // First ever run: set watermark to now and exit without modifying playlists
+  // First run: set watermark to now and exit without modifying playlists
   if (!state.lastProcessedAddedAt) {
     const nowIso = new Date().toISOString();
     await writeState({
@@ -111,7 +111,6 @@ async function main() {
       profiles[pid] = await buildPlaylistGenreProfile(pid);
       console.log("Profile genres count:", profiles[pid].size);
 
-      // Update the last rebuild time
       updatedLastProfileRebuildTime[pid] = new Date().toISOString();
     } else {
       console.log(
@@ -124,17 +123,14 @@ async function main() {
   const newTrackIdsByPlaylist: Record<string, string[]> = {};
   let newestAddedAt: string | undefined = state.lastProcessedAddedAt;
 
-  // Iterate saved tracks (most recent first)
   for await (const item of iterateSavedTracks()) {
     const addedAt = item.added_at;
 
     if (!newestAddedAt || addedAt > newestAddedAt) newestAddedAt = addedAt;
 
-    // Normal incremental runs: stop at watermark
     if (state.lastProcessedAddedAt && addedAt <= state.lastProcessedAddedAt)
       break;
 
-    // ---- existing routing logic below for non-baseline runs ----
     const track = item.track;
     const artistIds = track.artists.map((a) => a.id).filter(Boolean);
     const genres = new Set<string>();
@@ -146,7 +142,7 @@ async function main() {
     }
     const trackGenres = [...genres];
 
-    // Debug: score this track against every playlist profile
+    // Debugging stuff
     const scores = Object.entries(profiles)
       .map(([pid, prof]) => {
         return [pid, scoreTrackAgainstProfile(trackGenres, prof)] as const;
@@ -155,7 +151,7 @@ async function main() {
 
     const [bestPid, bestScore] = scores[0] ?? [targetPlaylists[0], 0];
 
-    // Log top 5 genres and per-playlist scores
+    // Debugging: Log top 5 genres and per-playlist scores
     const topGenres = trackGenres.slice(0, 5).join(", ") || "n/a";
     console.log(
       `Scores => ${scores.map(([pid, s]) => `${pid}:${s}`).join(" | ")}`,
@@ -177,7 +173,6 @@ async function main() {
     console.log(`Added ${res.added}, skipped as duplicates ${res.skipped}.`);
   }
 
-  // Update the state with both lastProcessedAddedAt and lastProfileRebuildTime
   const updatedState = { ...state };
 
   if (newestAddedAt && newestAddedAt > state.lastProcessedAddedAt) {
@@ -185,7 +180,6 @@ async function main() {
     console.log("Updated lastProcessedAddedAt ->", newestAddedAt);
   }
 
-  // Only update the profile rebuild times that have actually changed
   updatedState.lastProfileRebuildTime = updatedLastProfileRebuildTime;
 
   await writeState(updatedState);
