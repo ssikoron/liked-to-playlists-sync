@@ -1,6 +1,6 @@
 # Spotify New Likes -> Playlists
 
-A simple script to automatically newly liked spotify tracks into playlists based on the playlist genre profiles.
+A simple script to automatically add newly liked spotify tracks into playlists based on the playlist genre profiles.
 
 ## Why
 
