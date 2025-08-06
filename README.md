@@ -4,7 +4,9 @@ A simple script to automatically add newly liked spotify tracks into playlists b
 
 ## Why
 
-Spotify app in my car (Android Automotive) doesn't provide any way to automatically add new tracks to playlists. It does have a button to like a track. This script then makes sure every new liked track gets put in one of my current playlists.
+Spotify app in my car (Android Automotive) doesn't provide any way to automatically add new tracks to playlists. It does
+have a button to like a track. This script then makes sure every new liked track gets put in one of my current
+playlists.
 
 ## Setup
 
@@ -33,11 +35,8 @@ Spotify app in my car (Android Automotive) doesn't provide any way to automatica
    SPOTIFY_CLIENT_ID=your_client_id
    SPOTIFY_CLIENT_SECRET=your_client_secret
    SPOTIFY_REFRESH_TOKEN=your_refresh_token  # You'll get this in the next step
-   
-   # Target playlists (use one or both methods)
+
    TARGET_PLAYLIST_IDS=playlist_id1,playlist_id2
-   TARGET_PLAYLIST_ID_ROCK=rock_playlist_id
-   TARGET_PLAYLIST_ID_JAZZ=jazz_playlist_id
    
    # Optional: How often to rebuild genre profiles (in hours, default: 24)
    REBUILD_GENRE_PROFILE_INTERVAL=24
@@ -89,12 +88,14 @@ docker run -d \
 ## How to Find Playlist IDs
 
 You can find a playlist's ID in several ways:
+
 1. From the Spotify web player, the ID is in the URL: `https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M`
 2. Right-click a playlist and select "Share" > "Copy Spotify URI". The ID is the part after `spotify:playlist:`
 
 ## Behavior
 
-- On the first run, the application sets a watermark to the current time and will only process tracks liked after this point
+- On the first run, the application sets a watermark to the current time and will only process tracks liked after this
+  point
 - For each target playlist, a genre profile is built by analyzing all tracks and their artists
 - When it encounters a new liked track, the script determines which playlist has the most similar genre profile
 - The track is then added to that playlist (if it's not already there)
