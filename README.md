@@ -21,8 +21,8 @@ playlists.
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/liked-to-playlists-sync.git
-   cd liked-to-playlists-sync
+   git clone https://github.com/yourusername/spotify-liked-to-playlists-sync.git
+   cd spotify-liked-to-playlists-sync
    ```
 
 2. Install dependencies:
@@ -72,7 +72,7 @@ pnpm start
 
 ```bash
 # Build the Docker image
-docker build -t liked-to-playlists-sync .
+docker build -t spotify-liked-to-playlists-sync .
 
 # Run the container
 docker run -d \
@@ -82,7 +82,7 @@ docker run -d \
   -e SPOTIFY_CLIENT_SECRET=your_client_secret \
   -e SPOTIFY_REFRESH_TOKEN=your_refresh_token \
   -e TARGET_PLAYLIST_IDS=playlist_id1,playlist_id2 \
-  liked-to-playlists-sync
+  spotify-liked-to-playlists-sync
 ```
 
 ## How to Find Playlist IDs
